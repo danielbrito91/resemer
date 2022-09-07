@@ -60,11 +60,12 @@ tab_n <- seguranca_valida %>%
         gt() %>% 
         tab_spanner(label = "Gênero", columns=c("Masculino", "Feminino")) %>% 
         tab_spanner(label = "Idade", columns = c("Range", "Média")) %>% 
-        gt::tab_header(md("**Amostra do estudo**"))
+        gt::tab_header(md("**Amostra do estudo**")) %>% 
+        grand_summary_rows(columns=c("Amostra", "Masculino", "Feminino"),
+                             fns = list(Total = ~sum(.)),
+                             formatter = fmt_number, decimals = 0) 
 
 tab_n %>% gtsave("reports/figures/tab_n.png")
-
-
 
 respostas_por_programa <- seguranca_valida %>% 
         mutate(programa = as.factor(programa)) %>% 
