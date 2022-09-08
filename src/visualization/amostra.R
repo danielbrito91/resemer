@@ -72,10 +72,6 @@ tab_n <- seguranca_valida %>%
                            fns = list(Total = ~round(mean(seguranca_valida$idade))),
                            formatter = fmt_number, decimals = 0)
         
-        
-
-tab_n
-
 tab_n %>% gtsave("reports/figures/tab_n.png")
 
 respostas_por_programa <- seguranca_valida %>% 
