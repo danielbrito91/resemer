@@ -44,11 +44,12 @@ names(seguranca) <- c("id",
 
 names(programas) <- c("programa", "coord_titulado_abramede", "percent_profs_titulados")
 
-seguranca_valida <- seguranca %>% filter(lubridate::month(seguranca$data) < 4)
+seguranca_valida <- seguranca %>%
+        filter(lubridate::month(seguranca$data) < 4) %>% 
+        mutate(idade = interval(dmy(nascimento), date(ymd_hms(data))) / years(1),
+               idade = floor(idade))
 
 tab_n <- seguranca_valida %>% 
-        mutate(idade = interval(dmy(nascimento), date(ymd_hms(data))) / years(1),
-               idade = floor(idade)) %>% 
         group_by(posicao) %>% 
         summarise(Amostra = n(),
                   Masculino = sum(genero=="Masculino"),
@@ -63,7 +64,17 @@ tab_n <- seguranca_valida %>%
         gt::tab_header(md("**Amostra do estudo**")) %>% 
         grand_summary_rows(columns=c("Amostra", "Masculino", "Feminino"),
                              fns = list(Total = ~sum(.)),
-                             formatter = fmt_number, decimals = 0) 
+                             formatter = fmt_number, decimals = 0)  %>% 
+        grand_summary_rows(columns = c("Programas de residência"),
+                           fns = list(Total = ~length(unique(seguranca_valida$programa))),
+                           formatter = fmt_number, decimals = 0) %>% 
+        grand_summary_rows(columns = c("Média"),
+                           fns = list(Total = ~round(mean(seguranca_valida$idade))),
+                           formatter = fmt_number, decimals = 0)
+        
+        
+
+tab_n
 
 tab_n %>% gtsave("reports/figures/tab_n.png")
 
